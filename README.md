@@ -1,4 +1,4 @@
-# MargSuraksha 🛡️ | Offline Face Auth for Remote Field Operations
+# MargSuraksha  | Offline Face Auth for Remote Field Operations
 
 <div align="center">
 
@@ -20,13 +20,13 @@
 
 ---
 
-## 📌 Problem Statement
+##  Problem Statement
 
 NHAI field personnel operate in some of India's most remote and connectivity-deprived zones — highways under construction, mountain passes, and rural stretches where cellular networks are nonexistent. Existing attendance and identity verification systems collapse entirely without internet, opening the door to attendance fraud through photographs or screen-based spoofing. **MargSuraksha** solves this by embedding a fully on-device, AI-powered facial recognition and liveness detection engine directly into the Datalake 3.0 React Native app — no cloud, no connectivity, no compromise.
 
 ---
 
-## ⚡ What MargSuraksha Does
+##  What MargSuraksha Does
 
 - 🔒 **Authenticates field personnel entirely offline** using on-device facial recognition powered by a quantized MobileFaceNet model (~10 MB)
 - 👁️ **Detects liveness** through a two-layer approach — passive texture/frequency anti-spoofing and active challenges (blink, smile, head-turn) to prevent photo or screen fraud
@@ -37,7 +37,7 @@ NHAI field personnel operate in some of India's most remote and connectivity-dep
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Library / Tool         | Purpose                                              | License     |
 |------------------------|------------------------------------------------------|-------------|
@@ -53,7 +53,7 @@ NHAI field personnel operate in some of India's most remote and connectivity-dep
 
 ---
 
-## 📋 System Requirements
+##  System Requirements
 
 | Requirement         | Minimum Specification                  |
 |---------------------|----------------------------------------|
@@ -122,7 +122,7 @@ MargSuraksha/
 
 ---
 
-## 🚀 How to Run Locally
+##  How to Run Locally
 
 ### Prerequisites
 
@@ -169,7 +169,7 @@ AWS_ACCESS_KEY_ID=your_key_here
 AWS_SECRET_ACCESS_KEY=your_secret_here
 ```
 
-> ⚠️ The app works fully offline without AWS config. Sync simply stays queued until credentials are available.
+>  The app works fully offline without AWS config. Sync simply stays queued until credentials are available.
 
 ### Step 5 — Run on Android
 
@@ -186,7 +186,7 @@ npx react-native run-ios
 
 ---
 
-## 🧠 How Face Recognition Works
+##  How Face Recognition Works
 
 MargSuraksha uses a two-stage on-device pipeline:
 
@@ -208,7 +208,7 @@ Pre-registered embeddings are stored encrypted in `embeddings_store.json` and lo
 
 ---
 
-## 👁️ How Liveness Detection Works
+##  How Liveness Detection Works
 
 MargSuraksha employs a **dual-layer liveness system** to prevent spoofing via printed photographs, screens, or 3D masks:
 
@@ -228,7 +228,7 @@ Challenges are randomized at each session to prevent replay attacks. Both layers
 
 ---
 
-## 🔄 Offline Sync & Purge Mechanism
+##  Offline Sync & Purge Mechanism
 
 MargSuraksha is built **offline-first** — every authentication is logged locally before any sync is attempted.
 
@@ -286,7 +286,7 @@ MargSuraksha is built **offline-first** — every authentication is logged local
 
 ---
 
-## ✅ Open Source Compliance
+##  Open Source Compliance
 
 MargSuraksha is built **entirely on open-source technologies**. No proprietary SDKs, no paid licenses, no vendor lock-in.
 
@@ -306,15 +306,6 @@ MargSuraksha is built **entirely on open-source technologies**. No proprietary S
 The complete source code of the working prototype is shared as part of this submission per Hackathon 7.0 requirements.
 
 ---
-
-## 👥 Team
-
-| Field        | Details                              |
-|--------------|--------------------------------------|
-| **Project**  | MargSuraksha 🛡️                      |
-| **Hackathon**| NHAI Hackathon 7.0                   |
-| **Track**    | Offline AI · Mobile Security · Edge Inference |
-| **Contact**  | pranjalgupta@nhai.org (event queries)|
 
 > *"We are not here to propose an idea. We are here to build something that works when everything else stops working."*
 > — Team MargSuraksha
