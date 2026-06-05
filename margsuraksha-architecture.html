@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MargSuraksha — System Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-50: #e6f1fb;
+    --blue-200: #85b7eb;
+    --blue-400: #378add;
+    --blue-600: #185fa5;
+    --blue-800: #0c447c;
+    --green-50: #eaf3de;
+    --green-200: #97c459;
+    --green-400: #639922;
+    --green-600: #3b6d11;
+    --green-800: #27500a;
+    --amber-50: #faeeda;
+    --amber-200: #ef9f27;
+    --amber-400: #ba7517;
+    --amber-600: #854f0b;
+    --amber-800: #633806;
+    --gray-50: #f1efe8;
+    --gray-200: #b4b2a9;
+    --gray-400: #888780;
+    --gray-600: #5f5e5a;
+    --gray-800: #444441;
+    --bg: #0d0f12;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e6df;
+    --text-muted: #8a8880;
+    --radius: 12px;
+    --radius-lg: 18px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND GRID ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(55,138,221,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(55,138,221,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 64px;
+    background: rgba(13,15,18,0.82);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-brand {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav-brand span {
+    color: var(--blue-400);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s, background 0.2s;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--text);
+    background: rgba(255,255,255,0.06);
+  }
+
+  .nav-links .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .dot-blue { background: var(--blue-400); }
+  .dot-green { background: var(--green-400); }
+  .dot-amber { background: var(--amber-200); }
+  .dot-gray { background: var(--gray-400); }
+
+  /* ── MAIN ── */
+  main {
+    position: relative;
+    z-index: 1;
+    padding-top: 64px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 48px 60px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--blue-400);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(32px, 5vw, 58px);
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.2s;
+  }
+
+  .hero h1 .accent {
+    background: linear-gradient(135deg, var(--blue-400), var(--green-200));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--text-muted);
+    max-width: 580px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.3s;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.4s;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .meta-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* ── DATA FLOW BANNER ── */
+  .flow-banner {
+    margin: 0 48px 60px;
+    max-width: calc(1100px - 96px);
+    margin-left: auto;
+    margin-right: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.5s;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .flow-pill {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .fp-blue { background: rgba(55,138,221,0.15); color: var(--blue-200); border: 1px solid rgba(55,138,221,0.25); }
+  .fp-green { background: rgba(99,153,34,0.15); color: var(--green-200); border: 1px solid rgba(99,153,34,0.25); }
+  .fp-amber { background: rgba(239,159,39,0.12); color: var(--amber-200); border: 1px solid rgba(239,159,39,0.2); }
+  .fp-gray { background: rgba(136,135,128,0.12); color: var(--gray-200); border: 1px solid rgba(136,135,128,0.2); }
+
+  .flow-arrow {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0 4px;
+  }
+
+  /* ── SECTION ── */
+  section {
+    padding: 40px 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+    scroll-margin-top: 80px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .section-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .tag-blue { background: rgba(55,138,221,0.12); color: var(--blue-400); }
+  .tag-green { background: rgba(99,153,34,0.12); color: var(--green-400); }
+  .tag-amber { background: rgba(239,159,39,0.12); color: var(--amber-200); }
+  .tag-gray { background: rgba(136,135,128,0.12); color: var(--gray-400); }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  /* ── LAYER CONTAINER ── */
+  .layer-container {
+    border-radius: var(--radius-lg);
+    border: 1px solid;
+    padding: 28px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .layer-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .layer-blue {
+    background: rgba(55,138,221,0.04);
+    border-color: rgba(55,138,221,0.2);
+  }
+  .layer-blue::before { background: linear-gradient(90deg, var(--blue-600), var(--blue-400)); }
+  .layer-blue:hover { border-color: rgba(55,138,221,0.4); }
+
+  .layer-green {
+    background: rgba(99,153,34,0.04);
+    border-color: rgba(99,153,34,0.2);
+  }
+  .layer-green::before { background: linear-gradient(90deg, var(--green-600), var(--green-400)); }
+  .layer-green:hover { border-color: rgba(99,153,34,0.4); }
+
+  .layer-amber {
+    background: rgba(239,159,39,0.04);
+    border-color: rgba(186,117,23,0.2);
+  }
+  .layer-amber::before { background: linear-gradient(90deg, var(--amber-600), var(--amber-200)); }
+  .layer-amber:hover { border-color: rgba(239,159,39,0.35); }
+
+  .layer-gray {
+    background: rgba(136,135,128,0.04);
+    border-color: rgba(136,135,128,0.15);
+  }
+  .layer-gray::before { background: linear-gradient(90deg, var(--gray-600), var(--gray-400)); }
+  .layer-gray:hover { border-color: rgba(136,135,128,0.3); }
+
+  .layer-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  /* ── COMPONENT GRID ── */
+  .component-grid {
+    display: grid;
+    gap: 12px;
+  }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+  /* ── COMPONENT CARD ── */
+  .comp-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    position: relative;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    cursor: default;
+  }
+
+  .comp-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.055);
+  }
+
+  .layer-blue .comp-card:hover { border-color: rgba(55,138,221,0.4); }
+  .layer-green .comp-card:hover { border-color: rgba(99,153,34,0.4); }
+  .layer-amber .comp-card:hover { border-color: rgba(239,159,39,0.35); }
+  .layer-gray .comp-card:hover { border-color: rgba(136,135,128,0.35); }
+
+  .comp-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: -0.2px;
+  }
+
+  .comp-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .comp-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .badge-blue { background: rgba(55,138,221,0.12); color: var(--blue-200); }
+  .badge-green { background: rgba(99,153,34,0.12); color: var(--green-200); }
+  .badge-amber { background: rgba(239,159,39,0.1); color: var(--amber-200); }
+  .badge-gray { background: rgba(136,135,128,0.1); color: var(--gray-200); }
+
+  /* ── SQLITE SPECIAL ── */
+  .sqlite-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(55,138,221,0.15);
+    border-radius: var(--radius);
+    padding: 20px 20px 16px;
+    margin-top: 12px;
+  }
+
+  .sqlite-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .lock-icon {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--blue-400);
+    border-radius: 3px;
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  .lock-icon::before {
+    content: '';
+    position: absolute;
+    top: -6px; left: 2px;
+    width: 8px; height: 7px;
+    border: 1.5px solid var(--blue-400);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .sqlite-fields {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .sqlite-field {
+    padding: 6px 12px;
+    background: rgba(55,138,221,0.08);
+    border: 1px solid rgba(55,138,221,0.15);
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--blue-200);
+    transition: background 0.2s;
+  }
+
+  .sqlite-field:hover {
+    background: rgba(55,138,221,0.15);
+  }
+
+  /* ── FLOW ARROWS BETWEEN LAYERS ── */
+  .layer-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 0;
+    gap: 8px;
+    position: relative;
+  }
+
+  .connector-line {
+    width: 2px;
+    height: 36px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .connector-line svg {
+    position: absolute;
+    left: -8px;
+    top: 0;
+    width: 18px;
+    height: 36px;
+  }
+
+  .conn-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  /* ── FLOW DOTS ANIMATED ── */
+  @keyframes flowDot {
+    0% { transform: translateY(-20px); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(20px); opacity: 0; }
+  }
+
+  .flow-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    animation: flowDot 1.8s ease-in-out infinite;
+  }
+
+  .flow-dot-blue { background: var(--blue-400); animation-delay: 0s; }
+  .flow-dot-green { background: var(--green-400); animation-delay: 0.3s; }
+  .flow-dot-amber { background: var(--amber-200); animation-delay: 0.6s; }
+
+  /* ── PULSE ANIMATION ── */
+  @keyframes pulse-ring {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+    100% { transform: scale(0.9); opacity: 0.7; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .anim-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .anim-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── CONNECTIVITY BADGE ── */
+  .connectivity-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(186,117,23,0.08);
+    border: 1px solid rgba(186,117,23,0.2);
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--amber-200);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .wifi-pulse {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--amber-200);
+    animation: pulse-ring 1.5s ease-in-out infinite;
+  }
+
+  /* ── OFFLINE BADGE ── */
+  .offline-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99,153,34,0.08);
+    border: 1px solid rgba(99,153,34,0.2);
+    border-radius: 8px;
+    padding: 8px 14px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--green-200);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .offline-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green-400);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 20px 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin: 0 48px 48px;
+    max-width: calc(1100px - 96px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .legend-swatch {
+    width: 28px; height: 4px;
+    border-radius: 2px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 20px; }
+    .hero { padding: 60px 20px 40px; }
+    section { padding: 32px 20px; }
+    .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .flow-banner, .legend { margin-left: 20px; margin-right: 20px; }
+    footer { padding: 20px; flex-direction: column; gap: 12px; align-items: flex-start; }
+  }
+
+  @media (max-width: 560px) {
+    .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .hero-meta { flex-wrap: wrap; gap: 16px; }
+  }
+
+  /* ── SCAN LINE ON HERO ── */
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+  }
+
+  .hero-visual {
+    position: absolute;
+    right: 48px;
+    top: 80px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 1px solid rgba(55,138,221,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+  }
+
+  .hero-visual-inner {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 1px solid rgba(55,138,221,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-visual-inner::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--blue-400), transparent);
+    animation: scan 2.4s linear infinite;
+    opacity: 0.7;
+  }
+
+  .hero-visual-core {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(55,138,221,0.3), transparent 70%);
+    border: 1px solid rgba(55,138,221,0.4);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <a href="#" class="nav-brand">Marg<span>Suraksha</span></a>
+  <ul class="nav-links">
+    <li><a href="#mobile" class="active"><span class="dot dot-blue"></span>Mobile App</a></li>
+    <li><a href="#ai"><span class="dot dot-green"></span>On-Device AI</a></li>
+    <li><a href="#sync"><span class="dot dot-amber"></span>Sync Layer</a></li>
+    <li><a href="#cloud"><span class="dot dot-gray"></span>Cloud</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ── HERO ── -->
+  <div class="hero" style="position:relative;">
+    <p class="hero-eyebrow">System Architecture · v1.0</p>
+    <h1>MargSuraksha<br><span class="accent">Architecture</span></h1>
+    <p class="hero-desc">Mobile-based offline facial recognition and liveness detection system. Secure, on-device inference with encrypted local storage and cloud sync.</p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Runtime</span>
+        <span class="meta-value">TFLite · Offline</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Model Size</span>
+        <span class="meta-value">~10 MB INT8</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Platform</span>
+        <span class="meta-value">React Native</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Cloud</span>
+        <span class="meta-value">AWS S3 + Lambda</span>
+      </div>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-visual-inner">
+        <div class="hero-visual-core"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DATA FLOW BANNER ── -->
+  <div class="flow-banner">
+    <div class="flow-step">
+      <span class="flow-pill fp-blue">Camera</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">
+      <span class="flow-pill fp-blue">Liveness Detection</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">
+      <span class="flow-pill fp-blue">Face Recognition</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">
+      <span class="flow-pill fp-blue">SQLite DB</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">
+      <span class="flow-pill fp-amber">Network Check</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">
+      <span class="flow-pill fp-amber">AWS S3 Upload</span>
+    </div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">
+      <span class="flow-pill fp-gray">Datalake 3.0</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- LAYER 1: MOBILE APP -->
+  <!-- ══════════════════════════════════════════ -->
+  <section id="mobile">
+    <div class="section-header anim-in">
+      <span class="section-tag tag-blue">Layer 01</span>
+      <h2 class="section-title">Mobile App Layer — React Native</h2>
+    </div>
+
+    <div class="layer-container layer-blue anim-in">
+      <p class="layer-label">Pipeline · Capture → Detect → Recognize → Store</p>
+
+      <div class="component-grid grid-4">
+        <div class="comp-card">
+          <div class="comp-name">Camera Module</div>
+          <div class="comp-desc">Captures live video frames from device camera in real time.</div>
+          <span class="comp-badge badge-blue">Live Frame</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Liveness Detection</div>
+          <div class="comp-desc">Passive texture analysis combined with active challenge — blink detection and head turn prompts.</div>
+          <span class="comp-badge badge-blue">Anti-Spoof</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Face Recognition</div>
+          <div class="comp-desc">MobileFaceNet TFLite model, INT8 quantized, approximately 10 MB footprint.</div>
+          <span class="comp-badge badge-blue">MobileFaceNet</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Local Auth Result</div>
+          <div class="comp-desc">Final on-device determination of Pass or Fail before persisting to database.</div>
+          <span class="comp-badge badge-blue">Pass / Fail</span>
+        </div>
+      </div>
+
+      <div class="sqlite-card">
+        <div class="sqlite-title">
+          <div class="lock-icon"></div>
+          Encrypted SQLite Database
+        </div>
+        <div class="sqlite-fields">
+          <div class="sqlite-field">Employee ID</div>
+          <div class="sqlite-field">Face Embedding</div>
+          <div class="sqlite-field">Timestamp</div>
+          <div class="sqlite-field">GPS Coordinates</div>
+          <div class="sqlite-field">Sync Status</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECTOR -->
+  <div class="layer-connector anim-in">
+    <div class="flow-dot flow-dot-green"></div>
+    <span class="conn-label">frame data · inference request</span>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- LAYER 2: ON-DEVICE AI -->
+  <!-- ══════════════════════════════════════════ -->
+  <section id="ai">
+    <div class="section-header anim-in">
+      <span class="section-tag tag-green">Layer 02</span>
+      <h2 class="section-title">On-Device AI Layer</h2>
+    </div>
+
+    <div class="layer-container layer-green anim-in">
+      <div class="offline-note">
+        <div class="offline-dot"></div>
+        Runs fully offline — no network dependency for inference
+      </div>
+      <p class="layer-label">TFLite Runtime · Face Detection · Embedding · Matching</p>
+
+      <div class="component-grid grid-4">
+        <div class="comp-card">
+          <div class="comp-name">TFLite Runtime</div>
+          <div class="comp-desc">Lightweight on-device inference engine. INT8 quantized for speed and memory efficiency.</div>
+          <span class="comp-badge badge-green">Offline</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Face Detection</div>
+          <div class="comp-desc">BlazeFace or MTCNN-lite pipeline for locating and bounding face regions in the frame.</div>
+          <span class="comp-badge badge-green">BlazeFace / MTCNN</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Embedding Extraction</div>
+          <div class="comp-desc">MobileFaceNet extracts a compact 512-dimensional face embedding from the detected region.</div>
+          <span class="comp-badge badge-green">512-dim vector</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Cosine Similarity</div>
+          <div class="comp-desc">Compares extracted embedding against stored embeddings in the local database to find a match.</div>
+          <span class="comp-badge badge-green">Threshold Match</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECTOR -->
+  <div class="layer-connector anim-in">
+    <div class="flow-dot flow-dot-amber"></div>
+    <span class="conn-label">unsynced records · on connectivity</span>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- LAYER 3: SYNC -->
+  <!-- ══════════════════════════════════════════ -->
+  <section id="sync">
+    <div class="section-header anim-in">
+      <span class="section-tag tag-amber">Layer 03</span>
+      <h2 class="section-title">Sync Layer</h2>
+    </div>
+
+    <div class="layer-container layer-amber anim-in">
+      <div class="connectivity-note">
+        <div class="wifi-pulse"></div>
+        Triggers only when network connectivity is detected
+      </div>
+      <p class="layer-label">Monitor → Queue → Upload → Purge</p>
+
+      <div class="component-grid grid-4">
+        <div class="comp-card">
+          <div class="comp-name">Network Monitor</div>
+          <div class="comp-desc">Watches for WiFi or cellular connectivity. Triggers the sync pipeline once a connection is available.</div>
+          <span class="comp-badge badge-amber">Connectivity Check</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Queue Manager</div>
+          <div class="comp-desc">Reads all records from SQLite that have not yet been synced, batches them for upload.</div>
+          <span class="comp-badge badge-amber">SQLite Read</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">AWS S3 Upload</div>
+          <div class="comp-desc">Sends AES-encrypted payload to the designated S3 bucket over HTTPS with TLS transport.</div>
+          <span class="comp-badge badge-amber">Encrypted · HTTPS</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Purge on Confirm</div>
+          <div class="comp-desc">After receiving upload confirmation from S3, removes the successfully synced records from local storage.</div>
+          <span class="comp-badge badge-amber">Local Cleanup</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONNECTOR -->
+  <div class="layer-connector anim-in">
+    <div class="flow-dot" style="background:var(--gray-400); animation-delay:0.9s;"></div>
+    <span class="conn-label">HTTPS upload · encrypted payload</span>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- LAYER 4: CLOUD -->
+  <!-- ══════════════════════════════════════════ -->
+  <section id="cloud">
+    <div class="section-header anim-in">
+      <span class="section-tag tag-gray">Layer 04</span>
+      <h2 class="section-title">Cloud Layer — AWS</h2>
+    </div>
+
+    <div class="layer-container layer-gray anim-in">
+      <div class="connectivity-note" style="background: rgba(136,135,128,0.08); border-color: rgba(136,135,128,0.2); color: var(--gray-200);">
+        <div class="wifi-pulse" style="background: var(--gray-400);"></div>
+        Active only when device is connected to the internet
+      </div>
+      <p class="layer-label">S3 Bucket → Lambda → Datalake 3.0</p>
+
+      <div class="component-grid grid-3">
+        <div class="comp-card">
+          <div class="comp-name">AWS S3 Bucket</div>
+          <div class="comp-desc">Receives encrypted attendance records from mobile devices. Serves as the primary ingestion endpoint.</div>
+          <span class="comp-badge badge-gray">Object Storage</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Lambda Trigger</div>
+          <div class="comp-desc">Optional serverless function invoked on S3 PutObject events. Validates, transforms, and routes incoming records.</div>
+          <span class="comp-badge badge-gray">Serverless · Optional</span>
+        </div>
+        <div class="comp-card">
+          <div class="comp-name">Datalake 3.0</div>
+          <div class="comp-desc">Final authoritative data store. Analytics-ready, structured for downstream reporting and auditing pipelines.</div>
+          <span class="comp-badge badge-gray">Final Store</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LEGEND ── -->
+  <div class="legend anim-in">
+    <span style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-right:8px;">Legend</span>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background: var(--blue-400);"></div>
+      Mobile App Layer
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background: var(--green-400);"></div>
+      On-Device AI Layer
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background: var(--amber-200);"></div>
+      Sync Layer
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background: var(--gray-400);"></div>
+      Cloud Layer — AWS
+    </div>
+    <div class="legend-item" style="margin-left: auto;">
+      <div style="width:20px; height:2px; background: linear-gradient(90deg, var(--blue-400), transparent); margin-top:1px;"></div>
+      Data flow direction
+    </div>
+    <div class="legend-item">
+      <div style="width:20px; height:2px; border-top: 1px dashed var(--text-muted); margin-top:1px;"></div>
+      Conditional / async
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span class="footer-text">MargSuraksha — System Architecture Documentation</span>
+  <span class="footer-version">v1.0 · Offline-First · React Native</span>
+</footer>
+
+<script>
+  // Intersection Observer for scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.anim-in').forEach(el => observer.observe(el));
+
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`.nav-links a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  sections.forEach(s => navObserver.observe(s));
+</script>
+</body>
+</html>
